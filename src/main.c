@@ -2,8 +2,11 @@
 #include "../include/player.h"
 #include "../include/render.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-s_Game *game;
+s_Game game;
 const u8 mapLines = 8;
 const u8 map[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0,
@@ -13,47 +16,45 @@ const u8 map[] = {
 
 int main(int argc, char *argv[]) {
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    fprintf(stderr, "SDL INIT FAILED: %s\n", SDL_GetError());
+  ASSERT(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init failed: %s\n",
+         SDL_GetError());
+
+  ASSERT(IMG_Init(IMG_INIT_PNG), "IMG_Init failed: %s\n", SDL_GetError());
+  ASSERT(init_window() == EXIT_SUCCESS, "Window Init failed.\n");
+  ASSERT(init_player() == EXIT_SUCCESS, "Player Init failed.\n");
+
+  SDL_Event event;
+  u8 gameRunning = 1; // game loop
+
+  /*   Game Loop Begin */
+
+  window_clear();
+  draw_player();
+  draw_map();
+  window_display();
+
+  while (gameRunning) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.key.keysym.sym) {
+      case SDL_QUIT:
+      case SDLK_ESCAPE:
+        gameRunning = 0;
+        break;
+
+      case SDLK_z:
+        rotate_player(LEFT);
+        break;
+
+      default:
+        continue;
+      }
+      window_clear();
+      draw_player();
+      draw_map();
+      window_display();
+    }
   }
 
-  if (!(IMG_Init(IMG_INIT_PNG))) {
-    fprintf(stderr, "IMG INIT FAILED: %s\n", SDL_GetError());
-  }
-
-  s_Game *game = malloc(sizeof(s_Game));
-  game->player = malloc(sizeof(s_Player));
-  game->renderer = NULL;
-  game->window = NULL;
-  if (game == NULL) {
-    fprintf(stderr, "Game alloc failed\n");
-    return EXIT_FAILURE;
-  }
-  if (init_window() != EXIT_SUCCESS) {
-    fprintf(stderr, "Window alloc failed\n");
-    return EXIT_FAILURE;
-  }
-
-  // SDL_Event event;
-  // u8 gameRunning = 1; // game loop
-  //
-  // while (gameRunning) {
-  //   while (SDL_PollEvent(&event)) {
-  //     switch (event.key.keysym.sym) {
-  //     case SDL_QUIT:
-  //     case SDLK_ESCAPE:
-  //       gameRunning = 0;
-  //       break;
-  //
-  //     default:
-  //       continue;
-  //     }
-  //     window_clear();
-  //     window_display();
-  //   }
-  // }
-  //
-  // window_cleanUp();
-  SDL_Quit();
+  window_cleanUp();
   return EXIT_SUCCESS;
 }

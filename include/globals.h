@@ -15,11 +15,16 @@
 #define WINDOW_W 1024
 #define WALLSIZE 64
 #define PLAYER_SPEED 5
-#define PLAYER_SIZE 5
+#define PLAYER_SIZE 20
 #define FOV 60
 #define DOF 8
 #define DEG2RAD(_d) ((_d) * (PI / 180.0f))
 #define RAD2DEG(_d) ((_d) * (180.0f / PI))
+#define ASSERT(_e, ...)                                                        \
+  if (!(_e)) {                                                                 \
+    fprintf(stderr, __VA_ARGS__);                                              \
+    exit(1);                                                                   \
+  }
 
 enum directions { LEFT, RIGHT, UP, DOWN };
 
@@ -63,7 +68,7 @@ typedef struct {
 } vec3f;
 
 typedef struct {
-  vec2f position;
+  vec2 position;
   vec2f delta;
   double angle;
   vec2 direction; // facing direction
@@ -81,7 +86,7 @@ typedef struct {
   SDL_Renderer *renderer;
 } s_Game;
 
-extern s_Game *game;
+extern s_Game game;
 extern const u8 mapLines;
 extern const u8 map[];
 

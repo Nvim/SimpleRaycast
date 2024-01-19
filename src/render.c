@@ -1,64 +1,78 @@
 #include "../include/globals.h"
+#include <SDL2/SDL_error.h>
 #include <SDL2/SDL_video.h>
 
 s_Color bgColor = {40, 40, 40, 255};
+s_Color map_colors = {200, 200, 200, 255};
 
 u8 init_window() {
-  game->window =
+  game.window =
       SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        WINDOW_W, WINDOW_H, SDL_WINDOW_SHOWN);
+  ASSERT(game.window, "Window failed to init: %s\n", SDL_GetError());
 
-  if (game->window == NULL) {
-    fprintf(stderr, "Window failed to init. Error: %s", SDL_GetError());
-    return EXIT_FAILURE;
-  }
+  game.renderer = SDL_CreateRenderer(
+      game.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  ASSERT(game.renderer, "Renderer failed to init: %s\n", SDL_GetError());
 
-  game->renderer = SDL_CreateRenderer(
-      game->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-  if (game->renderer == NULL) {
-    fprintf(stderr, "Renderer failed to init. Error: %s", SDL_GetError());
-    return EXIT_FAILURE;
-  }
-
-  SDL_SetRenderDrawColor(game->renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+  SDL_SetRenderDrawColor(game.renderer, bgColor.r, bgColor.g, bgColor.b, 255);
   return EXIT_SUCCESS;
 }
 
-void renderRectangle(SDL_Rect *rect, s_Color *colors) {
-  SDL_SetRenderDrawColor(game->renderer, colors->r, colors->g, colors->b,
+void render_rectangle(SDL_Rect *rect, s_Color *colors) {
+  SDL_SetRenderDrawColor(game.renderer, colors->r, colors->g, colors->b,
                          colors->a);
-  if (SDL_RenderDrawRect(game->renderer, rect) < 0) {
+  if (SDL_RenderDrawRect(game.renderer, rect) < 0) {
     fprintf(stderr, "Erreur Creation Rectangle: %s", SDL_GetError());
   }
 }
 
-void renderFilledRectangle(SDL_Rect *rect, s_Color *colors) {
-  SDL_SetRenderDrawColor(game->renderer, colors->r, colors->g, colors->b,
+void render_filled_rectangle(SDL_Rect *rect, s_Color *colors) {
+  SDL_SetRenderDrawColor(game.renderer, colors->r, colors->g, colors->b,
                          colors->a);
-  if (SDL_RenderFillRect(game->renderer, rect) < 0) {
+  if (SDL_RenderFillRect(game.renderer, rect) < 0) {
     fprintf(stderr, "Erreur Fill Rectangle: %s", SDL_GetError());
   }
 }
 
-void renderLine(s_Color *colors, vec2 *point1, vec2 *point2) {
-  SDL_SetRenderDrawColor(game->renderer, colors->r, colors->g, colors->b,
+void render_line(s_Color *colors, vec2 *point1, vec2 *point2) {
+  SDL_SetRenderDrawColor(game.renderer, colors->r, colors->g, colors->b,
                          colors->a);
-  if (SDL_RenderDrawLine(game->renderer, point1->x, point1->y, point2->x,
-                         point2->y)) {
+  if (SDL_RenderDrawLine(game.renderer, (int)point1->x, (int)point1->y,
+                         (int)point2->x, (int)point2->y)) {
     fprintf(stderr, "Erreur Draw Line: %s", SDL_GetError());
   }
 }
 
 void window_clear() {
-  SDL_SetRenderDrawColor(game->renderer, bgColor.r, bgColor.g, bgColor.b, 255);
-  SDL_RenderClear(game->renderer);
+  // SDL_SetRenderDrawColor(game.renderer, bgColor.r, bgColor.g, bgColor.b,
+  // 255);
+  SDL_SetRenderDrawColor(game.renderer, bgColor.r, bgColor.g, bgColor.b, 255);
+  SDL_RenderClear(game.renderer);
 }
 
-void window_display() { SDL_RenderPresent(game->renderer); }
+void window_display() { SDL_RenderPresent(game.renderer); }
 
 void window_cleanUp() {
-  SDL_DestroyRenderer(game->renderer);
-  SDL_DestroyWindow(game->window);
+  SDL_DestroyRenderer(game.renderer);
+  SDL_DestroyWindow(game.window);
   printf("Cleanup done\n");
+}
+
+u8 xyToIndex(int lines, int cols) { return 8 * lines + cols; }
+
+void draw_map() {
+  SDL_Rect rect;
+  rect.h = WALLSIZE;
+  rect.w = WALLSIZE;
+  for (int lines = 0; lines < mapLines; lines++) {
+    for (int cols = 0; cols < mapLines; cols++) {
+      if (map[xyToIndex(lines, cols)] == 1) {
+        rect.x = WALLSIZE * cols;
+        rect.y = WALLSIZE * lines;
+
+        render_rectangle(&rect, &map_colors);
+      }
+    }
+  }
 }
