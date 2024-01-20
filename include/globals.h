@@ -12,14 +12,14 @@
 #include <stdlib.h>
 
 #define WINDOW_H 512
-#define WINDOW_W 1024
+#define WINDOW_W 512
 #define WALLSIZE 64
 #define PLAYER_SPEED 5
 #define PLAYER_SIZE 20
 #define FOV 60
 #define DOF 8
-#define DEG2RAD(_d) ((_d) * (PI / 180.0f))
-#define RAD2DEG(_d) ((_d) * (180.0f / PI))
+#define DEG2RAD(_d) ((_d) * (M_PI / 180.0f))
+#define RAD2DEG(_d) ((_d) * (180.0f / M_PI))
 #define ASSERT(_e, ...)                                                        \
   if (!(_e)) {                                                                 \
     fprintf(stderr, __VA_ARGS__);                                              \

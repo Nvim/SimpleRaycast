@@ -61,15 +61,18 @@ void window_cleanUp() {
 
 u8 xyToIndex(int lines, int cols) { return 8 * lines + cols; }
 
+// TODO: scaling to any resolution
 void draw_map() {
   SDL_Rect rect;
-  rect.h = WALLSIZE;
-  rect.w = WALLSIZE;
+  // int scaled_wallsize = (3 * WALLSIZE) / 4;
+  int scaled_wallsize = WALLSIZE;
+  rect.h = scaled_wallsize;
+  rect.w = scaled_wallsize;
   for (int lines = 0; lines < mapLines; lines++) {
     for (int cols = 0; cols < mapLines; cols++) {
       if (map[xyToIndex(lines, cols)] == 1) {
-        rect.x = WALLSIZE * cols;
-        rect.y = WALLSIZE * lines;
+        rect.x = scaled_wallsize * cols;
+        rect.y = scaled_wallsize * lines;
 
         render_rectangle(&rect, &map_colors);
       }

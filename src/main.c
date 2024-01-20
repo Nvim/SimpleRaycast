@@ -3,6 +3,7 @@
 #include "../include/render.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -13,6 +14,12 @@ const u8 map[] = {
     0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0,
     0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
+
+// int main() {
+//
+//   printf("36: %d\n", (int)(64 / tan(DEG2RAD(60))));
+//   return 0;
+// }
 
 int main(int argc, char *argv[]) {
 

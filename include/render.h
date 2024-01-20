@@ -11,6 +11,7 @@ void window_clear();
 void window_display();
 void window_cleanUp();
 
+u8 xyToIndex(int lines, int cols);
 void draw_map();
 
 #endif
