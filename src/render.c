@@ -11,6 +11,8 @@ s_Color wallColor_light = {0, 0, 255, 255};
 s_Color wallColor_dark = {0, 0, 185, 255};
 // const int scaled_wallsize = (3 * WALLSIZE) / 4;
 const int scaled_wallsize = WALLSIZE;
+const int dist_to_plane = (RENDER_W / 2) / tan(DEG2RAD(FOV / 2));
+const int column_w = (RENDER_W) / FOV;
 
 u8 init_window() {
   game.window =
@@ -94,26 +96,64 @@ void draw_player() {
   r.y = game.player->position.y;
 
   // vec2 *pos = cast_int(&game.player->position);
-  s_Ray *ray = cast_ray(game.player->angle);
-  vec2 ray_pos = cast_int(&ray->position);
-
+  // s_Ray *ray = cast_ray(game.player->angle);
+  // vec2 ray_pos = cast_int(&ray->position);
+  //
   render_filled_rectangle(&r, &player_colors);
-  render_line(&player_colors, &game.player->position, &ray_pos);
+  // render_line(&player_colors, &game.player->position, &ray_pos);
+}
+
+void render_scene_1ray() {
+
+  // double ang = game.player->angle - (DEG2RAD(1) * 30);
+  double ang = game.player->angle;
+  s_Ray *ray;
+  SDL_Rect rect;
+  rect.w = column_w;
+  for (int i = 0; i < 1; i++) {
+    if (RAD2DEG(ang) > 360) {
+      ang -= DEG2RAD(360);
+    }
+    ray = cast_ray(ang);
+    // vec2 ray_pos = cast_int(&ray->position);
+    // render_line(&wallColor_dark, &game.player->position, &ray_pos);
+
+    rect.h = WALLSIZE / ray->length * dist_to_plane;
+    rect.x = 512 + (column_w * i);
+    rect.y = (WINDOW_H / 2) - (rect.h / 2);
+    render_rectangle(&rect, &wallColor_light);
+
+    // printf("Player: %f, tmp: %f", RAD2DEG(game.player->angle), RAD2DEG(ang));
+    ang += DEG2RAD(1);
+  }
 }
 
 void render_scene() {
 
-  double ang = game.player->angle - (DEG2RAD(1) * 30);
+  double ang = game.player->angle + (DEG2RAD(1) * 30);
+  // double ang = game.player->angle;
   s_Ray *ray;
+  SDL_Rect rect;
+  rect.w = column_w;
   for (int i = 0; i < FOV; i++) {
     if (RAD2DEG(ang) > 360) {
       ang -= DEG2RAD(360);
     }
     ray = cast_ray(ang);
     vec2 ray_pos = cast_int(&ray->position);
-    render_line(&wallColor_dark, &game.player->position, &ray_pos);
+    // fix_fisheye(ray);
 
-    // printf("Player: %f, tmp: %f", RAD2DEG(game.player->angle), RAD2DEG(ang));
-    ang += DEG2RAD(1);
+    rect.h = WALLSIZE / ray->length * dist_to_plane;
+    rect.x = 512 + (column_w * i);
+    rect.y = (WINDOW_H / 2) - (rect.h / 2);
+    if (ray->horizontal == 1 && ray->hit_value != 0) {
+      render_filled_rectangle(&rect, &wallColor_light);
+      render_line(&wallColor_light, &game.player->position, &ray_pos);
+    } else if (ray->hit_value != 0) {
+      render_filled_rectangle(&rect, &wallColor_dark);
+      render_line(&wallColor_dark, &game.player->position, &ray_pos);
+    }
+
+    ang -= DEG2RAD(1);
   }
 }

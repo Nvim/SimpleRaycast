@@ -25,5 +25,6 @@ u8 xyToIndex(int lines, int cols);
 void draw_map();
 void draw_player();
 void render_scene();
+void render_scene_1ray();
 
 #endif

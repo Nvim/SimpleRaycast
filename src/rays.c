@@ -31,22 +31,21 @@ double get_len(s_Ray *ray) {
   // Pythagore:
   len = sqrt((lengthX * lengthX) + (lengthY * lengthY));
 
-  if (game.player->angle == ray->angle) {
-    return len;
+  return len;
+}
+
+// sets ray's length to the corrected value
+void fix_fisheye(s_Ray *ray) {
+
+  if (ray->angle == game.player->angle) {
+    return;
   }
 
-  // fisheye fix:
   double cosAngle = (game.player->angle - ray->angle);
-  if (cosAngle > 2 * M_PI) {
-    cosAngle -= 2 * M_PI;
-  }
-  if (cosAngle < 0) {
-    cosAngle += 2 * M_PI;
-  }
   if (RAD2DEG(cosAngle) > 360) {
     cosAngle -= DEG2RAD(360);
   }
-  return len * cosAngle;
+  ray->length *= cos(cosAngle);
 }
 
 s_Ray *cast_horiz_ray(double ray_angle) {
@@ -138,6 +137,8 @@ s_Ray *cast_vert_ray(double ray_angle) {
 s_Ray *cast_ray(double ray_angle) {
   s_Ray *hRay = cast_horiz_ray(ray_angle);
   s_Ray *vRay = cast_vert_ray(ray_angle);
+  fix_fisheye(hRay);
+  fix_fisheye(vRay);
   double hLen = hRay->length;
   double vLen = vRay->length;
 

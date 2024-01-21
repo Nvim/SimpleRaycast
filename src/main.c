@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
   window_clear();
   draw_player();
   draw_map();
+  render_scene();
   window_display();
 
   while (gameRunning) {

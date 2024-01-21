@@ -11,13 +11,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define WINDOW_W 1024
 #define WINDOW_H 512
-#define WINDOW_W 512
+#define RENDER_W 512
 #define WALLSIZE 64
 #define PLAYER_SPEED 5
 #define PLAYER_SIZE 20
 #define FOV 60
-#define DOF 5
+#define DOF 6
 #define DEG2RAD(_d) ((_d) * (M_PI / 180.0f))
 #define RAD2DEG(_d) ((_d) * (180.0f / M_PI))
 #define ASSERT(_e, ...)                                                        \
@@ -28,6 +29,8 @@
 
 enum directions { LEFT, RIGHT, UP, DOWN };
 extern const int scaled_wallsize;
+extern const int dist_to_plane;
+extern const int column_w;
 
 typedef uint8_t u8;
 typedef uint16_t u16;
