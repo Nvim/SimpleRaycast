@@ -1,9 +1,16 @@
+#include "../include/render.h"
 #include "../include/globals.h"
+#include "../include/player.h"
+#include "../include/rays.h"
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_video.h>
 
 s_Color bgColor = {40, 40, 40, 255};
 s_Color map_colors = {200, 200, 200, 255};
+s_Color wallColor_light = {0, 0, 255, 255};
+s_Color wallColor_dark = {0, 0, 185, 255};
+// const int scaled_wallsize = (3 * WALLSIZE) / 4;
+const int scaled_wallsize = WALLSIZE;
 
 u8 init_window() {
   game.window =
@@ -65,7 +72,6 @@ u8 xyToIndex(int lines, int cols) { return 8 * lines + cols; }
 void draw_map() {
   SDL_Rect rect;
   // int scaled_wallsize = (3 * WALLSIZE) / 4;
-  int scaled_wallsize = WALLSIZE;
   rect.h = scaled_wallsize;
   rect.w = scaled_wallsize;
   for (int lines = 0; lines < mapLines; lines++) {
@@ -77,5 +83,37 @@ void draw_map() {
         render_rectangle(&rect, &map_colors);
       }
     }
+  }
+}
+
+void draw_player() {
+  SDL_Rect r;
+  r.w = PLAYER_SIZE;
+  r.h = PLAYER_SIZE;
+  r.x = game.player->position.x;
+  r.y = game.player->position.y;
+
+  // vec2 *pos = cast_int(&game.player->position);
+  s_Ray *ray = cast_ray(game.player->angle);
+  vec2 ray_pos = cast_int(&ray->position);
+
+  render_filled_rectangle(&r, &player_colors);
+  render_line(&player_colors, &game.player->position, &ray_pos);
+}
+
+void render_scene() {
+
+  double ang = game.player->angle - (DEG2RAD(1) * 30);
+  s_Ray *ray;
+  for (int i = 0; i < FOV; i++) {
+    if (RAD2DEG(ang) > 360) {
+      ang -= DEG2RAD(360);
+    }
+    ray = cast_ray(ang);
+    vec2 ray_pos = cast_int(&ray->position);
+    render_line(&wallColor_dark, &game.player->position, &ray_pos);
+
+    // printf("Player: %f, tmp: %f", RAD2DEG(game.player->angle), RAD2DEG(ang));
+    ang += DEG2RAD(1);
   }
 }

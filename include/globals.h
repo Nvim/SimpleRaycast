@@ -17,7 +17,7 @@
 #define PLAYER_SPEED 5
 #define PLAYER_SIZE 20
 #define FOV 60
-#define DOF 8
+#define DOF 5
 #define DEG2RAD(_d) ((_d) * (M_PI / 180.0f))
 #define RAD2DEG(_d) ((_d) * (180.0f / M_PI))
 #define ASSERT(_e, ...)                                                        \
@@ -27,6 +27,7 @@
   }
 
 enum directions { LEFT, RIGHT, UP, DOWN };
+extern const int scaled_wallsize;
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -76,6 +77,8 @@ typedef struct {
 
 typedef struct {
   vec2f position;
+  double angle;
+  double length; // length in pixels
   i8 hit_value;  // map value of where the ray hit
   u8 horizontal; // boolean: 1 = horiz, 0 = vert
 } s_Ray;

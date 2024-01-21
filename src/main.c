@@ -3,7 +3,6 @@
 #include "../include/render.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -14,12 +13,6 @@ const u8 map[] = {
     0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0,
     0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
-
-// int main() {
-//
-//   printf("36: %d\n", (int)(64 / tan(DEG2RAD(60))));
-//   return 0;
-// }
 
 int main(int argc, char *argv[]) {
 
@@ -48,8 +41,23 @@ int main(int argc, char *argv[]) {
         gameRunning = 0;
         break;
 
-      case SDLK_z:
+      case SDLK_LEFT:
+        rotate_player(RIGHT);
+        break;
+      case SDLK_RIGHT:
         rotate_player(LEFT);
+        break;
+      case SDLK_z:
+        game.player->position.y -= PLAYER_SPEED;
+        break;
+      case SDLK_s:
+        game.player->position.y += PLAYER_SPEED;
+        break;
+      case SDLK_q:
+        game.player->position.x -= PLAYER_SPEED;
+        break;
+      case SDLK_d:
+        game.player->position.x += PLAYER_SPEED;
         break;
 
       default:
@@ -58,6 +66,7 @@ int main(int argc, char *argv[]) {
       window_clear();
       draw_player();
       draw_map();
+      render_scene();
       window_display();
     }
   }
@@ -65,3 +74,9 @@ int main(int argc, char *argv[]) {
   window_cleanUp();
   return EXIT_SUCCESS;
 }
+
+// int main() {
+//
+//   printf("36: %d\n", (int)(64 / tan(DEG2RAD(60))));
+//   return 0;
+// }
