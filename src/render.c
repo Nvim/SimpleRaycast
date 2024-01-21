@@ -7,8 +7,10 @@
 
 s_Color bgColor = {40, 40, 40, 255};
 s_Color map_colors = {200, 200, 200, 255};
-s_Color wallColor_light = {0, 0, 255, 255};
-s_Color wallColor_dark = {0, 0, 185, 255};
+s_Color wallColor_light = {167, 167, 167, 255};
+s_Color wallColor_dark = {100, 100, 100, 255};
+s_Color floor_color = {0, 0, 102, 255};
+s_Color ceiling_color = {100, 100, 250, 255};
 // const int scaled_wallsize = (3 * WALLSIZE) / 4;
 const int scaled_wallsize = WALLSIZE;
 const int dist_to_plane = (RENDER_W / 2) / tan(DEG2RAD(FOV / 2));
@@ -128,8 +130,30 @@ void render_scene_1ray() {
   }
 }
 
+void render_floor() {
+  SDL_Rect rect;
+  rect.x = mapLines * WALLSIZE;
+  rect.y = WINDOW_H / 2;
+  rect.w = column_w * FOV;
+  rect.h = rect.y;
+
+  render_filled_rectangle(&rect, &floor_color);
+}
+
+void render_ceiling() {
+  SDL_Rect rect;
+  rect.x = mapLines * WALLSIZE;
+  rect.y = 0;
+  rect.w = column_w * FOV;
+  rect.h = WINDOW_H / 2;
+
+  render_filled_rectangle(&rect, &ceiling_color);
+}
+
 void render_scene() {
 
+  render_floor();
+  render_ceiling();
   double ang = game.player->angle + (DEG2RAD(1) * 30);
   // double ang = game.player->angle;
   s_Ray *ray;
