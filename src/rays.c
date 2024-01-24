@@ -54,6 +54,8 @@ s_Ray *cast_horiz_ray(double ray_angle) {
   s_Ray *ray = malloc(sizeof(s_Ray));
   ray->angle = ray_angle;
   ray->horizontal = 1;
+  u8 i = 0;
+  u8 tmp = 0;
 
   vec2f a;   // 1st intersection point with the grid
   vec2f inc; // increment by this to find next intersect
@@ -65,26 +67,23 @@ s_Ray *cast_horiz_ray(double ray_angle) {
   if (ray_angle_deg < 180 && ray_angle_deg > 0) {
     inc.y = -WALLSIZE;
     a.y -= 1;
+    tmp = 1;
   } else {
     inc.y = WALLSIZE;
     inc.x = -inc.x;
     a.y += WALLSIZE;
   }
-
   a.x = game.player->position.x + (game.player->position.y - a.y) / aTan;
+
   ray->position = a;
   ray->hit_value = map[xyToIndex((int)(a.y / WALLSIZE), (int)(a.x / WALLSIZE))];
 
-  for (int i = 0; i < DOF; i++) {
-    if (map[xyToIndex((int)(ray->position.y / WALLSIZE),
-                      (int)(ray->position.x / WALLSIZE))] != 0) {
-      ray->length = get_len(ray);
-      return ray;
-    }
+  while (ray->hit_value == 0) {
     ray->position.x += inc.x;
     ray->position.y += inc.y;
     ray->hit_value = map[xyToIndex((int)(ray->position.y / WALLSIZE),
                                    (int)(ray->position.x / WALLSIZE))];
+    i++;
   }
 
   ray->length = get_len(ray);
@@ -97,6 +96,8 @@ s_Ray *cast_vert_ray(double ray_angle) {
   s_Ray *ray = malloc(sizeof(s_Ray));
   ray->angle = ray_angle;
   ray->horizontal = 0;
+  u8 i = 0;
+  u8 tmp = 0;
 
   vec2f a;
   vec2f inc;
@@ -107,6 +108,7 @@ s_Ray *cast_vert_ray(double ray_angle) {
   if (ray_angle_deg > 90 && ray_angle_deg < 270) { // looking left
     a.x -= 1;
     inc.x = -WALLSIZE;
+    tmp = 1;
   } else {
     a.x += WALLSIZE;
     inc.x = WALLSIZE;
@@ -117,16 +119,12 @@ s_Ray *cast_vert_ray(double ray_angle) {
   ray->position = a;
   ray->hit_value = map[xyToIndex((int)(a.y / WALLSIZE), (int)(a.x / WALLSIZE))];
 
-  for (int i = 0; i < DOF; i++) {
-    if (map[xyToIndex((int)(ray->position.y / WALLSIZE),
-                      (int)(ray->position.x / WALLSIZE))] != 0) {
-      ray->length = get_len(ray);
-      return ray;
-    }
+  while (ray->hit_value == 0 && i < DOF) {
     ray->position.x += inc.x;
     ray->position.y += inc.y;
     ray->hit_value = map[xyToIndex((int)(ray->position.y / WALLSIZE),
                                    (int)(ray->position.x / WALLSIZE))];
+    i++;
   }
 
   ray->length = get_len(ray);
@@ -143,7 +141,9 @@ s_Ray *cast_ray(double ray_angle) {
   double vLen = vRay->length;
 
   if (fmin(hLen, vLen) == hLen) {
+    free(vRay);
     return hRay;
   }
+  free(hRay);
   return vRay;
 }

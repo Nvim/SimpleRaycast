@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
   }
 
   window_cleanUp();
+  free(game.player);
   return EXIT_SUCCESS;
 }
 

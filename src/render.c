@@ -14,7 +14,7 @@ s_Color ceiling_color = {100, 100, 250, 255};
 // const int scaled_wallsize = (3 * WALLSIZE) / 4;
 const int scaled_wallsize = WALLSIZE;
 const int dist_to_plane = (RENDER_W / 2) / tan(DEG2RAD(FOV / 2));
-const int column_w = (RENDER_W) / FOV;
+const int column_w = ((RENDER_W) / FOV) / 2;
 
 u8 init_window() {
   game.window =
@@ -134,7 +134,7 @@ void render_floor() {
   SDL_Rect rect;
   rect.x = mapLines * WALLSIZE;
   rect.y = WINDOW_H / 2;
-  rect.w = column_w * FOV;
+  rect.w = column_w * FOV * 2;
   rect.h = rect.y;
 
   render_filled_rectangle(&rect, &floor_color);
@@ -144,7 +144,7 @@ void render_ceiling() {
   SDL_Rect rect;
   rect.x = mapLines * WALLSIZE;
   rect.y = 0;
-  rect.w = column_w * FOV;
+  rect.w = column_w * FOV * 2;
   rect.h = WINDOW_H / 2;
 
   render_filled_rectangle(&rect, &ceiling_color);
@@ -159,7 +159,7 @@ void render_scene() {
   s_Ray *ray;
   SDL_Rect rect;
   rect.w = column_w;
-  for (int i = 0; i < FOV; i++) {
+  for (int i = 0; i < FOV * 2; i++) {
     if (RAD2DEG(ang) > 360) {
       ang -= DEG2RAD(360);
     }
@@ -178,6 +178,7 @@ void render_scene() {
       render_line(&wallColor_dark, &game.player->position, &ray_pos);
     }
 
-    ang -= DEG2RAD(1);
+    free(ray);
+    ang -= DEG2RAD(0.5);
   }
 }
