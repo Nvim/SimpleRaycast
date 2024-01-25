@@ -59,13 +59,13 @@ s_Ray *cast_horiz_ray(double ray_angle) {
   vec2f nearest; // 1st intersection point with the grid
   vec2f step;    // increment by this to find next intersect
 
-  nearest.y = (int)(playerY / WALLSIZE) * WALLSIZE;
+  nearest.y = floor(playerY / WALLSIZE) * WALLSIZE;
   step.x = WALLSIZE / aTan;
 
   // if looking up
   if (ray_angle_deg < 180 && ray_angle_deg > 0) {
     step.y = -WALLSIZE;
-    nearest.y -= 1;
+    nearest.y -= 1.1;
     tmp = 1;
   } else {
     step.y = WALLSIZE;
@@ -102,7 +102,7 @@ s_Ray *cast_vert_ray(double ray_angle) {
   vec2f step;
 
   step.y = WALLSIZE * aTan;
-  nearest.x = (int)(playerX / WALLSIZE) * WALLSIZE;
+  nearest.x = floor(playerX / WALLSIZE) * WALLSIZE;
 
   if (ray_angle_deg > 90 && ray_angle_deg < 270) { // looking left
     nearest.x -= 1;
