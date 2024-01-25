@@ -49,38 +49,38 @@ void fix_fisheye(s_Ray *ray) {
 }
 
 s_Ray *cast_horiz_ray(double ray_angle) {
-  double aTan = tan(ray_angle);
-  double ray_angle_deg = RAD2DEG(ray_angle);
+  double aTan = tan(ray_angle), ray_angle_deg = RAD2DEG(ray_angle);
+  double playerX = game.player->position.x, playerY = game.player->position.y;
   s_Ray *ray = malloc(sizeof(s_Ray));
   ray->angle = ray_angle;
   ray->horizontal = 1;
-  u8 i = 0;
-  u8 tmp = 0;
+  u8 i = 0, tmp = 0;
 
-  vec2f a;   // 1st intersection point with the grid
-  vec2f inc; // increment by this to find next intersect
+  vec2f nearest; // 1st intersection point with the grid
+  vec2f step;    // increment by this to find next intersect
 
-  a.y = (int)(game.player->position.y / WALLSIZE) * WALLSIZE;
-  inc.x = WALLSIZE / aTan;
+  nearest.y = (int)(playerY / WALLSIZE) * WALLSIZE;
+  step.x = WALLSIZE / aTan;
 
   // if looking up
   if (ray_angle_deg < 180 && ray_angle_deg > 0) {
-    inc.y = -WALLSIZE;
-    a.y -= 1;
+    step.y = -WALLSIZE;
+    nearest.y -= 1;
     tmp = 1;
   } else {
-    inc.y = WALLSIZE;
-    inc.x = -inc.x;
-    a.y += WALLSIZE;
+    step.y = WALLSIZE;
+    step.x = -step.x;
+    nearest.y += WALLSIZE;
   }
-  a.x = game.player->position.x + (game.player->position.y - a.y) / aTan;
+  nearest.x = playerX + (playerY - nearest.y) / aTan;
 
-  ray->position = a;
-  ray->hit_value = map[xyToIndex((int)(a.y / WALLSIZE), (int)(a.x / WALLSIZE))];
+  ray->position = nearest;
+  ray->hit_value =
+      map[xyToIndex((int)(nearest.y / WALLSIZE), (int)(nearest.x / WALLSIZE))];
 
   while (ray->hit_value == 0) {
-    ray->position.x += inc.x;
-    ray->position.y += inc.y;
+    ray->position.x += step.x;
+    ray->position.y += step.y;
     ray->hit_value = map[xyToIndex((int)(ray->position.y / WALLSIZE),
                                    (int)(ray->position.x / WALLSIZE))];
     i++;
@@ -91,37 +91,37 @@ s_Ray *cast_horiz_ray(double ray_angle) {
 }
 
 s_Ray *cast_vert_ray(double ray_angle) {
-  double aTan = tan(ray_angle);
-  double ray_angle_deg = RAD2DEG(ray_angle);
+  double aTan = tan(ray_angle), ray_angle_deg = RAD2DEG(ray_angle);
+  double playerX = game.player->position.x, playerY = game.player->position.y;
   s_Ray *ray = malloc(sizeof(s_Ray));
   ray->angle = ray_angle;
   ray->horizontal = 0;
-  u8 i = 0;
-  u8 tmp = 0;
+  u8 i = 0, tmp = 0;
 
-  vec2f a;
-  vec2f inc;
+  vec2f nearest;
+  vec2f step;
 
-  inc.y = WALLSIZE * aTan;
-  a.x = (int)(game.player->position.x / WALLSIZE) * WALLSIZE;
+  step.y = WALLSIZE * aTan;
+  nearest.x = (int)(playerX / WALLSIZE) * WALLSIZE;
 
   if (ray_angle_deg > 90 && ray_angle_deg < 270) { // looking left
-    a.x -= 1;
-    inc.x = -WALLSIZE;
+    nearest.x -= 1;
+    step.x = -WALLSIZE;
     tmp = 1;
   } else {
-    a.x += WALLSIZE;
-    inc.x = WALLSIZE;
-    inc.y = -inc.y;
+    nearest.x += WALLSIZE;
+    step.x = WALLSIZE;
+    step.y = -step.y;
   }
 
-  a.y = game.player->position.y + (game.player->position.x - a.x) * aTan;
-  ray->position = a;
-  ray->hit_value = map[xyToIndex((int)(a.y / WALLSIZE), (int)(a.x / WALLSIZE))];
+  nearest.y = playerY + (playerX - nearest.x) * aTan;
+  ray->position = nearest;
+  ray->hit_value =
+      map[xyToIndex((int)(nearest.y / WALLSIZE), (int)(nearest.x / WALLSIZE))];
 
   while (ray->hit_value == 0 && i < DOF) {
-    ray->position.x += inc.x;
-    ray->position.y += inc.y;
+    ray->position.x += step.x;
+    ray->position.y += step.y;
     ray->hit_value = map[xyToIndex((int)(ray->position.y / WALLSIZE),
                                    (int)(ray->position.x / WALLSIZE))];
     i++;
