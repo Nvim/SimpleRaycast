@@ -9,7 +9,8 @@
 
 CXX=gcc
 COMPILE_FLAGS= -m64 -g -Wall -I include
-LINK_FLAGS= -lSDL2main -lSDL2 -lSDL2_image -lm
+# LINK_FLAGS= -lSDL2main -lSDL2 -lSDL2_image -lm
+LINK_FLAGS=-lSDL2 -lm
 SRC=src
 OBJ=obj
 

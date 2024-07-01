@@ -2,7 +2,6 @@
 #include "../include/player.h"
 #include "../include/render.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -19,7 +18,7 @@ int main(int argc, char *argv[]) {
   ASSERT(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init failed: %s\n",
          SDL_GetError());
 
-  ASSERT(IMG_Init(IMG_INIT_PNG), "IMG_Init failed: %s\n", SDL_GetError());
+  // ASSERT(IMG_Init(IMG_INIT_PNG), "IMG_Init failed: %s\n", SDL_GetError());
   ASSERT(init_window() == EXIT_SUCCESS, "Window Init failed.\n");
   ASSERT(init_player() == EXIT_SUCCESS, "Player Init failed.\n");
 
